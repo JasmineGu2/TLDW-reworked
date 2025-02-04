@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import GeneratedPDF
 from .main import *
 from .pdf import *
 
@@ -41,17 +42,18 @@ def login_view(request):
     else:
         return Response({'error': 'Invalid credentials'}, status=400)
 
+@api_view(['POST'])
 def generate_pdf(request):
     user = request.user
-    link = request.data("link")  # ✅ Use request.data
+    link = request.data.get("link")  # ✅ Use request.data
     if not link:
         return Response({"error": "No YouTube link provided"}, status=400)
-
+    
     # get the notes
     class_notes, keywords, title, sum_notes = yt2var(link)
     # Make the notes into a pdf
-    pdf_name = toPdf(class_notes, keywords)
-    pdf_path = os.path.join("generated_pdfs", pdf_name)
+    pdf_name = toPdf(class_notes, keywords, link, user)
+    
     pdf_instance = GeneratedPDF.objects.create(
         user=user,
         youtube_link=link,
