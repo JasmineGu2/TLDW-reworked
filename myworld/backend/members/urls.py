@@ -1,8 +1,15 @@
 from django.urls import path
-from . import views
+from django.conf import settings
+from django.conf.urls.static import static
+from . import views  # Import views correctly
 
 urlpatterns = [
-    path('members/', views.members, name='members'),
-    path('downloadyoutube/',views.downloadyoutube,name='downloadyoutube'),
-    path('downloadpdf/',views.downloadpdf,name='downloadpdf'),
+    path('api/register/', views.register_view, name='register'),
+    path('api/login/', views.login_view, name='login'),
+    path('api/generate-pdf/', views.generate_pdf, name='generate_pdf'),  # FIXED: Added `views.`
+    path('api/get-user-pdfs/', views.get_user_pdfs, name='get_user_pdfs'),  # FIXED: Added `views.`
 ]
+
+# ✅ Ensure media files are served during development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

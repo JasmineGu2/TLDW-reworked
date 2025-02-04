@@ -1,26 +1,70 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework_simplejwt.tokens import RefreshToken
 from .main import *
 from .pdf import *
 
-def members(request):   
-    print("hello")
-    return HttpResponse("eunha")
+# User Authentication Views
+@api_view(['POST'])
+def register_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
 
-def downloadyoutube(request):
-    print("hello")
-    link = request.GET["link"]
-    class_notes, keywords, title, sum_array = yt2var(link)
-    print(class_notes)
-    print('keywords', keywords)
-    print(title)
-    toPdf(sum_array, keywords)
-    data = JsonResponse({'title': title, 
+    if User.objects.filter(username=username).exists():
+        return Response({'error': 'Username already exists'}, status=400)
+
+    user = User.objects.create_user(username=username, password=password)
+    return Response({'message': 'User registered successfully'})
+
+@api_view(['POST'])
+def login_view(request):
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    user = authenticate(username=username, password=password)
+
+    if user is not None:
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': {
+                'id': user.id,
+                'username': user.username,
+            }
+        })
+    else:
+        return Response({'error': 'Invalid credentials'}, status=400)
+
+def generate_pdf(request):
+    user = request.user
+    link = request.data("link")  # ✅ Use request.data
+    if not link:
+        return Response({"error": "No YouTube link provided"}, status=400)
+
+    # get the notes
+    class_notes, keywords, title, sum_notes = yt2var(link)
+    # Make the notes into a pdf
+    pdf_name = toPdf(class_notes, keywords)
+    pdf_path = os.path.join("generated_pdfs", pdf_name)
+    pdf_instance = GeneratedPDF.objects.create(
+        user=user,
+        youtube_link=link,
+        pdf_file=f"generated_pdfs/{pdf_name}"    
+    )
+
+    return Response({'message': "PDF generated successfully",
+        'title': title, 
         'class_notes': class_notes, 
-        'keywords': keywords})
-    return data
+        'keywords': keywords,
+        "pdf_url": f"{request.build_absolute_uri(pdf_instance.pdf_file.url)}"})
 
-def downloadpdf(request):
-    print('pdf!!!!')
-
+def get_user_pdfs(request):
+    user = request.user
+    pdfs = GeneratedPDF.objects.filter(user=user).values("id", "youtube_link", "pdf_file", "created_at")
+    return Response({"pdfs": list(pdfs)})

@@ -1,109 +1,100 @@
 import cohere
-from dotenv import load_dotenv
+from cohere import ClassifyExample
 import os
-import pandas as pd
 
-load_dotenv()
-
-# have to put api key in .env
 co = cohere.Client(os.getenv('API_KEY_COHERE'))
-from cohere.classify import Example
 
+# Example classification categories
 a = 'Core Concept'
 b = 'Point'
 c = 'Example'
 d = 'Definition'
 e = 'Remove'
 
-examples=[
-  Example("Our body is made up of trillions of cells that all require energy made in the mitochondria to function. ", a),
-  Example("Mitochondria use the oxygen you breathe to make energy for you.", a),
-  Example("Taking a look at the next topic", a),
-  Example("We will first discuss how to design an interface", a),
-  Example("The human body needs energy to move, eat, breathe; chemical energy which is produced in the mitochondria and is called ATP.", a),
+class ClassifyExample:
+    def __init__(self, text, label):
+        self.text = text
+        self.label = label
 
-  Example("One of the features of an interface is the navigation bar", b),
-  Example("Scientists think that mitochondria evolved from bacteria and used to be a separate single celledorganism", b),
-  Example("ATP is released by mitochondria, so cells can use it. Mitochondria consists of two membranes an outer membrane separating it from the cytosol and an inner membrane surrounding the so called matrix", b),
-  Example("Cells that require more energy contain more mitochondria. Muscle cells use a lot of ATP for muscle contraction to produce the amount of ATP that's required. There are more mitochondria found in muscle cells.", b),
-  
-  Example("For example, the mitochodrion uses energy from ATP", c),
-  Example("An example of a graph of a non-function is shown here", c),
-  Example("John Smith is an example of an important theorist", c),
-  Example("Take this cube for example. The middle square on the top appears to be a shade of brown, while the one on the side looks much more orange. But in actuality, they are both the exact same colour.", c),
-  
-  Example("Electrons are stable subatomic particle with a charge of negative electricity, found in all atoms and acting as the primary carrier of electricity in solids.",d),
-  Example("The mitochondria is an organelle found in large numbers in most cells.",d),
-  Example("DNA is a self-replicating material that is present in nearly all living organisms as the main constituent of chromosomes. It is the carrier of genetic information",d),
-  Example("Photosynthesis is the process by which plants use sunlight, water, and carbon dioxide to create oxygen and energy in the form of sugar.",d),
-  Example("Science is the study of the universe around us and within us, natural phenomena, and solutions to problems. ",d),
-  Example("The scientific method is a process for gathering data and processing information",d),
-  Example("ATP is the energy currency of the human body.",d),
+examples = [
+    ClassifyExample(text="Our body is made up of trillions of cells that all require energy made in the mitochondria to function.", label=a),
+    ClassifyExample(text="Mitochondria use the oxygen you breathe to make energy for you.", label=a),
+    ClassifyExample(text="We will first discuss how to design an interface", label=a),
+    ClassifyExample(text="The human body needs energy to move, eat, breathe; chemical energy which is produced in the mitochondria and is called ATP.", label=a),
 
-  Example("Want to learn more? Subscribe to our channel",e),
-  Example("Visit our website to learn more",e),
-  Example("Please subscribe and like this video",e),
+    ClassifyExample(text="One of the features of an interface is the navigation bar", label=b),
+    ClassifyExample(text="Scientists think that mitochondria evolved from bacteria and used to be a separate single-celled organism", label=b),
+    ClassifyExample(text="ATP is released by mitochondria, so cells can use it.", label=b),
+    ClassifyExample(text="Cells that require more energy contain more mitochondria.", label=b),
 
+    ClassifyExample(text="For example, the mitochondrion uses energy from ATP", label=c),
+    ClassifyExample(text="An example of a graph of a non-function is shown here", label=c),
+    ClassifyExample(text="John Smith is an example of an important theorist", label=c),
+    ClassifyExample(text="Take this cube for example.", label=c),
+
+    ClassifyExample(text="Electrons are stable subatomic particles with a charge of negative electricity, found in all atoms.", label=d),
+    ClassifyExample(text="The mitochondria is an organelle found in large numbers in most cells.", label=d),
+    ClassifyExample(text="DNA is a self-replicating material.", label=d),
+    ClassifyExample(text="Photosynthesis is the process by which plants create energy in the form of sugar.", label=d),
+
+    ClassifyExample(text="Want to learn more? Subscribe to our channel", label=e),
+    ClassifyExample(text="Visit our website to learn more", label=e),
+    ClassifyExample(text="Please subscribe and like this video", label=e),
+
+    # Wealthsimple-related classifications
+    ClassifyExample(text="Wealthsimple is a popular online investment platform in Canada that's been around for exactly one decade now.", label=a),
+    ClassifyExample(text="A robo advisor allows you to select your risk level and then fund your account with money, and then an algorithm actually does the rest of the work for you.", label=a),
+    ClassifyExample(text="Wealthsimple's original goal was to make passive investing accessible and low cost for the majority of Canadians to get more people started with investing.", label=a),
+    ClassifyExample(text="Wealthsimple has three different tiers: Core, Premium, and Generation.", label=a),
+
+    ClassifyExample(text="In 2019, they launched Wealthsimple Trade, which is a self-directed investment platform that allows you to purchase your own stocks and ETFs directly and commission-free.", label=b),
+    ClassifyExample(text="Wealthsimple also has a tax filing software called Wealthsimple Tax, and they’re coming out with their own mortgage product as well.", label=b),
+    ClassifyExample(text="Wealthsimple’s platform allows you to invest fully on your own, commission-free.", label=b),
+    ClassifyExample(text="Premium members have complimentary access to USD accounts, unlike Core members who have to pay a fee.", label=b),
+
+    ClassifyExample(text="For example, if you buy a coffee for $6.50 and have the roundup feature turned on, 50 cents will be sent to your investment account.", label=c),
+    ClassifyExample(text="Let's say I have $1,000 to invest and I want to purchase an ETF that’s trading for exactly $30 a share—fractional shares allow me to buy exactly 33.333 shares.", label=c),
+    ClassifyExample(text="If you move outside the country, you will have to either keep your Wealthsimple account frozen or transfer your funds to another platform.", label=c),
+    ClassifyExample(text="For instance, many platforms in Canada charge up to $10 per trade, whereas Wealthsimple Trade charges nothing.", label=c),
+
+    ClassifyExample(text="A robo advisor is a digital platform that provides automated, algorithm-driven financial planning services with little to no human supervision.", label=d),
+    ClassifyExample(text="A TFSA (Tax-Free Savings Account) is a type of investment account where any gains you make are tax-free.", label=d),
+    ClassifyExample(text="CDIC (Canada Deposit Insurance Corporation) is a federal crown corporation that insures eligible deposits at member financial institutions.", label=d),
+    ClassifyExample(text="Norbert’s Gambit is a currency conversion technique used to minimize exchange fees when converting CAD to USD.", label=d),
+
+    ClassifyExample(text="Want to learn more? Subscribe to our channel.", label=e),
+    ClassifyExample(text="Make sure you like and subscribe for more content.", label=e),
+    ClassifyExample(text="Comment below if you have any questions!", label=e),
+    ClassifyExample(text="Check out our older videos to learn more about managed investing!", label=e),
 ]
 
-
-def extract(self, example):
+def extract(example):
     extraction = co.generate(
-        model='large',
-        prompt=self.make_prompt(example),
-        max_tokens=10,
+        model="command",
+        prompt=f"Extract only the most relevant keywords from the following text. Return only the keywords, separated by commas:\n\n{example}",
+        max_tokens=15,  # Allow slightly more tokens for multiple keywords
         temperature=0.1,
-        stop_sequences=["\n"])
-    return(extraction.generations[0].text[:-1])
+        stop_sequences=["\n"]
+    )
+    print(extraction)
+    
+    # Ensure clean keyword extraction
+    return extraction.generations[0].text.strip().replace("Here are the important keywords extracted from the text:", "").strip()
 
 
-def classifyNotes(input):
+def classifyNotes(input_text):
     response = co.classify(
-        model='large',  
-        inputs=input,  
+        inputs=input_text,
         examples=examples
-        )
-    preds = []
-    for i in response.classifications:
-        preds.append(i.prediction)
-    return preds
-
-
-
-def summarize(input):
-    prompt = f"""Passage: Alright, so the world has seemingly become utterly divided on this dress. What colours do you see? On one side we have team Black and Blue - on the other, team White and Gold
+    )
+    # Extract predictions and corresponding input texts
+    predictions = [classification.prediction for classification in response.classifications]
+    texts = [classification.input for classification in response.classifications]
     
-    TLDR: People disagree on the colour of this dress; some see Black and Blue, others see White and Gold. 
-    --
-    Passage: Our body is made up of trillions of cells. They all require energy to function. This energy is created within our cells in the mitochondria
-    
-    TLDR: Our body is made up of trillions of cells that all require energy made in the mitochondria to function. 
-    --
-    Passage: This continuous pumping creates a proton gradient where the positively charged protons are attracted to the more negative matrix. When the protons reenter the matrix through the ATP synthase protein complex they catalyze the production of ATP
-    
-    TLDR: Continuous pumping creates a proton gradient where protons are attracted to the more negative matrix. Protons catalyze ATP production when they reenter the matrix. 
-    --
-    Passage: Research suggests that the protein essential for the formation of chicken eggs, called ov 17, is only found in chicken ovaries. Without it, the chicken eggshell could not be formed. So without a chicken, you technically can't get a chicken egg
-    
-    TLDR: Research shows that ov 17, only found in chicken ovaries, is essential to the production of the chicken eggshell. 
-    --
-    Passage: Is Wordle getting tougher to solve? Players seem to be convinced that the game has gotten harder in recent weeks ever since The New York Times bought it from developer Josh Wardle in late January. The Times has come forward and shared that this likely isn't the case. That said, the NYT did mess with the back end code a bit, removing some offensive and sexual language, as well as some obscure words There is a viral thread claiming that a confirmation bias was at play. One Twitter user went so far as to claim the game has gone to "the dusty section of the dictionary" to find its latest words
-    
-    TLDR: Wordle has not gotten more difficult to solve. 
-    --
-    Passage: The human body needs energy to move, eat, breathe. Chemical energy which is produced in the mitochondria of the cell and is called ATP.
-
-    TLDR: The human body needs energy; chemical energy which is produced in mitochondria and is called ATP.
-    --
-    Passage: {input}
-    
-    TLDR: """
-
-    response = co.generate( 
-        model='xlarge', 
-        prompt = prompt,
-        max_tokens=80, 
-        temperature=1,
-        stop_sequences=['--'])
-
-    return response.generations[0].text
+    return predictions, texts
+# Test classification function
+inputs = [
+    "Confirm your email address",
+    "hey i need u to send some $",
+]
+print(classifyNotes(inputs))
