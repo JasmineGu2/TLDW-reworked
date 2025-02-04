@@ -66,7 +66,12 @@ def generate_pdf(request):
         'keywords': keywords,
         "pdf_url": f"{request.build_absolute_uri(pdf_instance.pdf_file.url)}"})
 
+@api_view(['GET'])
 def get_user_pdfs(request):
     user = request.user
     pdfs = GeneratedPDF.objects.filter(user=user).values("id", "youtube_link", "pdf_file", "created_at")
+
+    for pdf in pdfs:
+        pdf["pdf_url"] = request.build_absolute_uri(settings.MEDIA_URL + pdf["pdf_file"])
+
     return Response({"pdfs": list(pdfs)})
