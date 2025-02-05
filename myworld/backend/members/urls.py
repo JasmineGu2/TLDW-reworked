@@ -12,9 +12,6 @@ urlpatterns = [
     # ✅ PDF Generation Endpoints
     path('api/generate_pdf/', views.generate_pdf, name='generate_pdf'),  
     path('api/get_pdf/', views.get_user_pdfs, name='get_user_pdfs'),  
-    
-    # ✅ Task Progress Tracking (NEW)
-    path('api/progress/<str:task_id>/', views.task_progress, name='task_progress'),
 
     # ✅ JWT Authentication Endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

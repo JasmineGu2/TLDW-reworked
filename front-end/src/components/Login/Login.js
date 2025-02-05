@@ -5,7 +5,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  
+
   const handleLogin = async (e) => {
     e.preventDefault();
     
@@ -17,7 +17,8 @@ function Login() {
 
     const data = await response.json();
     if (response.ok) {
-      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
       alert("Login successful!");
       navigate("/app");
     } else {

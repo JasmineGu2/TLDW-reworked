@@ -1,8 +1,6 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { useState } from "react";
-import Logo from "./imgs/logo.png";
-import Login from "./Login"; // Import the login component
+import Login from "./components/Login/Login"; // Import the login component
 import MainApp from "./MainApp"; // Extracted the main app logic
 
 function App() {

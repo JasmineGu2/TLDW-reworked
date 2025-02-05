@@ -35,14 +35,26 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+        'daphne',
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders', 
-    'django_celery_results',
-    "celery_progress",
+    'channels',
+    'celery',
     'members'
 ]
+ASGI_APPLICATION = "backend.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],  # Make sure Redis is running
+        },
+    },
+}
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
@@ -50,11 +62,9 @@ CORS_ALLOWED_ORIGINS = [
 
 # Celery configurations
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis as message broker
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = "django-cache"
+CELERY_BROKER_URL = "redis://127.0.0.1:6379/0"  # Redis as the message broker
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

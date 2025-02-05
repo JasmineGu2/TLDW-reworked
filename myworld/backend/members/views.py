@@ -1,16 +1,14 @@
-from django.shortcuts import render
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from celery.result import AsyncResult
-from .models import GeneratedPDF
-from .tasks import generate_pdf_task  # Import Celery task
-from .pdf import *
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
+from .pdf import * 
+from .main import yt2var  # Import yt2var
 
 # User Authentication Views
 @api_view(['POST'])
@@ -46,40 +44,32 @@ def login_view(request):
     else:
         return Response({'error': 'Invalid credentials'}, status=400)
 
-# ✅ Generate PDF (Background Task using Celery)
-@api_view(['POST'])
-@permission_classes([AllowAny])  # Change to [IsAuthenticated] if user login is required
+from django.http import JsonResponse
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .main import yt2var  # ✅ Import yt2var (handles everything)
+
+@api_view(["POST"])
+@permission_classes([AllowAny])  # Change to [IsAuthenticated] if login is required
 def generate_pdf(request):
-    user = request.user if request.user.is_authenticated else None
+    user = request.user 
     link = request.data.get("link")
 
     if not link:
         return Response({"error": "No YouTube link provided"}, status=400)
-    
-    # Start Celery task
-    task = generate_pdf_task.delay(link, user.id if user else None)
-    
-    return Response({"message": "PDF generation started", "task_id": task.id})
 
+    # ✅ Process Video & Get Results (WebSocket updates happen inside `yt2var`)
+    result = yt2var(link, user)
 
-# ✅ Progress API to Track Task Statuss
-@api_view(['GET'])
-@permission_classes([AllowAny])
-def task_progress(request, task_id):
-    task_result = AsyncResult(task_id)
-    response_data = {"state": task_result.state}
-
-    if task_result.state == "PROGRESS":
-        response_data["current"] = task_result.info.get("current", 0)
-        response_data["total"] = task_result.info.get("total", 100)
-    elif task_result.state == "SUCCESS":
-        response_data.update({
-            "class_notes": task_result.result.get("class_notes"),
-            "keywords": task_result.result.get("keywords")
-        })
-
-    return Response(response_data)
-
+    return Response(
+        {
+            "message": "PDF generated successfully",
+            "class_notes": result["class_notes"],
+            "keywords": result["keywords"],
+            "pdf_url": request.build_absolute_uri(result["pdf_url"]),
+        }
+    )
 
 
 # ✅ Get User PDFs

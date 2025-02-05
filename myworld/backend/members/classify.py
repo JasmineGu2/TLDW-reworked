@@ -2,7 +2,7 @@ import cohere
 from cohere import ClassifyExample
 import os
 
-co = cohere.Client(os.getenv('API_KEY_COHERE'))
+co = cohere.Client('be9hsXdGngivV7mpMBN7toSumRn9mu11YX638ARk')
 
 # Example classification categories
 a = 'Core Concept'
