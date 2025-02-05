@@ -1,3 +1,4 @@
+import threading
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -7,8 +8,11 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+
+from .models import GeneratedPDF
 from .pdf import * 
 from .main import yt2var  # Import yt2var
+from django.core.cache import cache
 
 # User Authentication Views
 @api_view(['POST'])
@@ -50,31 +54,50 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .main import yt2var  # ✅ Import yt2var (handles everything)
 
+# @api_view(["POST"])
+# @permission_classes([AllowAny])  # Change to [IsAuthenticated] if login is required
+# def generate_pdf(request):
+#     user = request.user 
+#     link = request.data.get("link")
+
+#     if not link:
+#         return Response({"error": "No YouTube link provided"}, status=400)
+
+#     # ✅ Process Video & Get Results (WebSocket updates happen inside `yt2var`)
+#     result = yt2var(link, user)
+
+#     return Response(
+#         {
+#             "message": "PDF generated successfully",
+#             "class_notes": result["class_notes"],
+#             "keywords": result["keywords"],
+#             "pdf_url": request.build_absolute_uri(result["pdf_url"]),
+#         }
+#     )
+
+
 @api_view(["POST"])
 @permission_classes([AllowAny])  # Change to [IsAuthenticated] if login is required
 def generate_pdf(request):
-    user = request.user 
+    user = request.user if request.user.is_authenticated else None
     link = request.data.get("link")
 
     if not link:
         return Response({"error": "No YouTube link provided"}, status=400)
 
-    # ✅ Process Video & Get Results (WebSocket updates happen inside `yt2var`)
-    result = yt2var(link, user)
+    # ✅ Use user Id for taskId
+    task_id = f"user_{user.id if user else 'anonymous'}"
 
-    return Response(
-        {
-            "message": "PDF generated successfully",
-            "class_notes": result["class_notes"],
-            "keywords": result["keywords"],
-            "pdf_url": request.build_absolute_uri(result["pdf_url"]),
-        }
-    )
+    # ✅ Run yt2var in a separate thread (Non-blocking)
+    thread = threading.Thread(target=yt2var, args=(link, task_id))
+    thread.start()
 
+    # ✅ Return task_id immediately so frontend can start listening to WebSocket updates
+    return JsonResponse({"message": "PDF generation started", "task_id": task_id})
 
 # ✅ Get User PDFs
 @api_view(['GET'])
-@permission_classes([IsAuthenticated]) 
+@permission_classes([AllowAny]) 
 def get_user_pdfs(request):
     user = request.user
     pdfs = GeneratedPDF.objects.filter(user=user).values("id", "youtube_link", "pdf_file", "created_at")
@@ -83,3 +106,12 @@ def get_user_pdfs(request):
         pdf["pdf_url"] = request.build_absolute_uri(settings.MEDIA_URL + pdf["pdf_file"])
 
     return Response({"pdfs": list(pdfs)})
+
+@api_view(["GET"])
+@permission_classes([AllowAny])  
+def get_task_result(request, task_id):
+    """Fetch stored task result"""
+    result = cache.get(task_id)
+    if result:
+        return Response(result, status=200)
+    return Response({"error": "Result not available yet"}, status=404)

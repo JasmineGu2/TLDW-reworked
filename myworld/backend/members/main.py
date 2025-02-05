@@ -8,23 +8,28 @@ from .script import *
 from .classify import *
 from .extract import *
 from .pdf import toPdf  # ✅ Import PDF function
+from django.core.cache import cache
 
 load_dotenv()
 co = cohere.Client('be9hsXdGngivV7mpMBN7toSumRn9mu11YX638ARk')
 
-def yt2var(link, user_id):
-    """Processes a YouTube video: downloads, transcribes, summarizes, classifies, and generates PDF."""
+def yt2var(link, task_id):
+    """Processes a YouTube video and sends WebSocket progress updates"""
 
     channel_layer = get_channel_layer()
-    task_group = f"user_{user_id}"
+    task_group = f"progress_{task_id}"  # ✅ Use task_id instead of user_id
 
     def send_update(progress, status, pdf_url=None):
         """Send WebSocket update to frontend"""
         message = {"progress": progress, "status": status}
         if pdf_url:
             message["pdf_url"] = pdf_url  # ✅ Send PDF URL on completion
-        async_to_sync(channel_layer.group_send)(task_group, {"type": "send_progress", **message})
 
+        async_to_sync(channel_layer.group_send)(
+            task_group,
+            {"type": "send_progress", **message}
+        )
+            
     # ✅ Start Processing
     send_update(5, "Downloading audio...")
     audio = CoolClass()
@@ -61,11 +66,18 @@ def yt2var(link, user_id):
         class_notes=join_note,
         keywords=keywords,
         youtube_link=link,
-        user=user_id  # ✅ Pass user ID instead of object
     )
 
     pdf_url = f"/media/generated_pdfs/{pdf_filename}"  # ✅ Public path for frontend
 
+    result_data = {
+        "class_notes": join_note,
+        "keywords": keywords,
+        "title": title,
+        "pdf_url": pdf_url
+    }
+    cache.set(task_id, result_data, timeout=3600) 
+    
     # ✅ Final WebSocket Update with PDF
     send_update(100, "Completed!", pdf_url=pdf_url)
 

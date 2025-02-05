@@ -3,8 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class ProgressConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.user_id = self.scope["url_route"]["kwargs"]["user_id"]
-        self.task_group_name = f"user_{self.user_id}"
+        self.task_id = self.scope["url_route"]["kwargs"]["task_id"]  # ✅ Change `user_id` to `task_id`
+        self.task_group_name = f"progress_{self.task_id}"  # ✅ Use task_id, not user_id
 
         # ✅ Join WebSocket group
         await self.channel_layer.group_add(

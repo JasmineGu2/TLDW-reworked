@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./styles.css";
 
-const ProgressBar = ({ userId, onComplete }) => {
+const ProgressBar = ({ taskId, onComplete }) => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    if (!userId) return;
+    if (!taskId) return;
 
-    const ws = new WebSocket(`ws://127.0.0.1:8000/ws/progress/${userId}/`);
+    const ws = new WebSocket(`ws://127.0.0.1:8000/ws/progress/${taskId}/`);
 
     ws.onopen = () => {
       console.log("WebSocket connected");
@@ -16,17 +16,12 @@ const ProgressBar = ({ userId, onComplete }) => {
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
       setProgress(data.progress);
       setStatus(data.status);
 
       if (data.progress === 100) {
-        onComplete({
-          class_notes: data.class_notes,
-          keywords: data.keywords,
-          pdf_url: data.pdf_url,
-        });
         ws.close();
+        fetchFinalResult();
       }
     };
 
@@ -41,12 +36,29 @@ const ProgressBar = ({ userId, onComplete }) => {
     return () => {
       ws.close();
     };
-  }, [userId]);
+  }, [taskId]);
+
+  const fetchFinalResult = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/progress/result/${taskId}/`);
+      const result = await response.json();
+
+      if (response.ok) {
+        onComplete(result); // Send final data to parent component
+      } else {
+        console.error("Result not available yet");
+      }
+    } catch (error) {
+      console.error("Error fetching result:", error);
+    }
+  };
 
   return (
     <div className="progress-container">
       <div className="progress-filler" style={{ width: `${progress}%` }}>
-        <span className="progress-label">{`${Math.round(progress)}% - ${status}`}</span>
+        {progress > 0 && (
+          <div className="progress-label">{`${Math.round(progress)}% - ${status}`}</div>
+        )}
       </div>
     </div>
   );
