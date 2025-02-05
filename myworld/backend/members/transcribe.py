@@ -39,7 +39,6 @@ def transcribe(audio_url):
 
 
 # poll
-
 def poll(transcript_id):
     polling_endpoint = transcript_endpoint + '/' + transcript_id
     polling_repsonse =  requests.get(polling_endpoint, headers=headers)
@@ -69,16 +68,3 @@ def save_transcript(audio_url, filename):
 
 
 
-
-
-# import speech_recognition as sr
-
-# def speechToText(file):
-#     # initialize the recognizer
-#     AUDIO_FILE = file
-#     # use the audio file as the audio source                                        
-#     r = sr.Recognizer()
-#     with sr.AudioFile(AUDIO_FILE) as source:
-#             audio = r.record(source)  # read the entire audio file                  
-
-#             print("Transcription: " + r.recognize_google(audio))
