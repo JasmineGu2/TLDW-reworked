@@ -11,13 +11,16 @@ urlpatterns = [
     
     # ✅ PDF Generation Endpoints
     path('api/generate_pdf/', views.generate_pdf, name='generate_pdf'),  
-    path('api/get_pdf/', views.get_user_pdfs, name='get_user_pdfs'),  
+    path('api/get_notes/', views.get_notes, name='get_notes'),  
     path('api/progress/result/<str:task_id>/', views.get_task_result, name='get_task_result'),
 
     # ✅ JWT Authentication Endpoints
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    
+    path("api/concepts/", views.get_concepts, name="get_concepts"),
+    path("api/concepts/add/", views.add_concept, name="add_concept"),
 ]
 
 # ✅ Ensure media files are served during development

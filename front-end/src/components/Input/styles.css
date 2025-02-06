@@ -1,0 +1,15 @@
+.input {
+    width: 100%;
+    padding: 8px 12px; /* Equivalent to Tailwind's px-3 py-2 */
+    border: 1px solid #d1d5db; /* Equivalent to Tailwind's border-gray-300 */
+    border-radius: 6px; /* Equivalent to Tailwind's rounded-md */
+    font-size: 16px;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .input:focus {
+    outline: none;
+    border-color: #3b82f6; /* Equivalent to Tailwind's focus:ring-blue-500 */
+    box-shadow: 0 0 0 2px #3b82f6; /* Equivalent to Tailwind's focus:ring-2 */
+  }
+  

@@ -14,7 +14,7 @@ class PDF(FPDF):
         self.set_font('Arial', 'I', 8)
         self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
 
-def toPdf(class_notes, keywords, youtube_link):
+def toPdf(class_notes, keywords, youtube_link, file_name):
     pdf = PDF()
     pdf.alias_nb_pages()
     pdf.add_page()
@@ -38,7 +38,7 @@ def toPdf(class_notes, keywords, youtube_link):
     os.makedirs(pdf_folder, exist_ok=True)
 
     # Create a unique filename for the PDF
-    pdf_filename = "video_notes.pdf"
+    pdf_filename = f"{file_name}.pdf"
     pdf_path = os.path.join(pdf_folder, pdf_filename)
     
     # Save the PDF

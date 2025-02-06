@@ -1,52 +1,84 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import NavBar from "./components/NavBar/NavBar";
 import ProgressBar from "./components/ProgressBar/ProgressBar";
-import "./App.css";
+import Button from "./components/Button/button.js";
+import Input from "./components/Input/input";
+import Card from "./components/Card/card";
+import PdfTable from "./components/PdfTable/pdftable.js";
+import Concepts from "./components/Concepts/concepts.js";
+import { motion } from "framer-motion";
+import "./global.css"
 
-function MainApp() {
+export default function MainApp() {
   const [link, setLink] = useState("");
-  const [data, setData] = useState({ class_notes: "", keywords: "", pdf_url: "" });
-  const [loading, setLoading] = useState(false);
+  const [file_name, setFileName] = useState("");
+  const [error, setError] = useState("");
+  const [data, setData] = useState({
+    class_notes: "",
+    keywords: "",
+    pdf_url: "",
+  });
   const [taskId, setTaskId] = useState(null);
-  const [success, setSuccess] = useState(false); // To show success message
+  const [success, setSuccess] = useState(false);
+  const [pdfs, setPdfs] = useState([]);
+  const [concept, setConcept] = useState("");
 
   const handleChange = (e) => {
     setLink(e.target.value);
   };
 
+  const handleFileNameChange = (e) => {
+    setFileName(e.target.value);
+    if (e.target.value.trim() === "") {
+      setError("File name cannot be empty");
+    } else {
+      setError("");
+    }
+  };
+
   const handleGeneratePDF = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setTaskId(null); // Reset previous task
-    setSuccess(false)
-  
+    if (!file_name.trim()) {
+      setError("File name cannot be empty");
+      return;
+    }
+    if (!concept.trim()) {
+      setError("Need to select a concept");
+      return;
+    }
+
+    setTaskId(null);
+    setSuccess(false);
+
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/generate_pdf/", {
+      let response = await fetch("http://127.0.0.1:8000/api/generate_pdf/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ link }),
+        body: JSON.stringify({
+          link,
+          file_name: file_name,
+          concept_name: concept,
+        }), // ✅ Send concept
       });
-  
+
+      const result = await response.json();
+
       if (response.ok) {
-        const result = await response.json();
-        setTaskId(result.task_id); // ✅ Set taskId immediately for WebSocket tracking
-        console.log(result.task_id)
+        setTaskId(result.task_id);
+        console.log(result.task_id);
       } else {
-        alert("PDF generation failed.");
-        setLoading(false);
+        setError(response.error);
       }
     } catch (error) {
       console.error("Error:", error);
-      setLoading(false);
     }
   };
-  
-  const handleGetPdf = async (e) => {
-    e.preventDefault();
+
+  const handleGetPdf = async () => {
     let accessToken = localStorage.getItem("accessToken");
 
     try {
-      let response = await fetch("http://127.0.0.1:8000/api/get_pdf/", {
+      let response = await fetch("http://127.0.0.1:8000/api/get_notes/", {
         method: "GET",
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -56,9 +88,12 @@ function MainApp() {
 
       if (response.status === 401) {
         accessToken = await refreshAccessToken();
-        if (!accessToken) throw new Error("Authentication required");
+        if (!accessToken) {
+          alert("Authentication required");
+          return;
+        }
 
-        response = await fetch("http://127.0.0.1:8000/api/get_pdf/", {
+        response = await fetch("http://127.0.0.1:8000/api/get_notes/", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -67,12 +102,13 @@ function MainApp() {
         });
       }
 
-      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+      if (!response.ok)
+        throw new Error(`HTTP error! Status: ${response.status}`);
 
       const data = await response.json();
-      console.log("PDF Data:", data);
+      setPdfs(data.pdfs);
     } catch (error) {
-      console.log("Error fetching PDFs:", error);
+      alert("Error fetching PDFs: " + error.message);
     }
   };
 
@@ -98,54 +134,98 @@ function MainApp() {
     }
   };
 
+  useEffect(() => {
+    handleGetPdf();
+  }, []); //Fixed: Added empty dependency array
+
   return (
-    <div className="App">
+    <div className="min-h-screen bg-gray-100">
       <NavBar />
-      <section className="wrapper">
-        <section className="input-output">
-          <form onSubmit={handleGeneratePDF}>
-            <div className="search-bar">
-              <h1 className="upload">Copy and Paste Link Here</h1>
-              <div className="input-wrapper">
-                <input
+
+      <main className="container mx-auto px-4 py-8 mt-64">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="relative overflow-hidden bg-card shadow-lg border-2 border-primary p-6">
+            <form onSubmit={handleGeneratePDF} className="space-y-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">
+                  YouTube Link
+                </label>
+                <Input
+                  type="text"
                   value={link}
                   onChange={handleChange}
-                  type="text"
-                  className="search-bar-input"
                   placeholder="Paste YouTube link here"
+                  className="w-full bg-background border-primary text-foreground placeholder:text-muted-foreground"
                 />
-                <button type="submit" className="search-bar-button">
-                  <i className="material-icons">upload</i>
-                </button>
               </div>
-              <ProgressBar taskId={taskId} onComplete={(data) => {
-                setData(data);
-                setLoading(false);
-                setSuccess(true); 
-                }} />
-            </div>
-          </form>
-          {success && (
-            <div>
-            <h2>PDF Generation Succeeded!</h2>
-            </div>
-          )}
-          <div className="output">
-            <h1 className="notes">TL;DW</h1>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">File Name</label>
+                <Input
+                  type="text"
+                  value={file_name}
+                  onChange={handleFileNameChange}
+                  placeholder="Enter file name"
+                  className="bg-background border-primary text-foreground placeholder:text-muted-foreground"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="block text-sm font-medium">
+                  Select a Concept
+                </label>
+                <Concepts
+                  selectedConcept={concept}
+                  setSelectedConcept={setConcept}
+                />
+              </div>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-destructive"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <ProgressBar
+                taskId={taskId}
+                onComplete={(data) => {
+                  setData(data);
+                  setSuccess(true);
+                  handleGetPdf();
+                }}
+              />
+
+              <Button
+                type="submit"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                Generate PDF
+              </Button>
+            </form>
+          </Card>
+
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-2">TL;DW</h2>
             <textarea
-              rows="12"
-              className="output-bar"
+              rows={12}
               value={data["class_notes"] + "\n" + data["keywords"]}
               readOnly
+              className="w-full py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-          <button type="submit" onClick={handleGetPdf} className="search-bar-button">
-            <i className="material-icons">upload</i>
-          </button>
-        </section>
-      </section>
+          <Card>
+            <PdfTable pdfs={pdfs} update={success} />
+          </Card>
+        </motion.div>
+      </main>
     </div>
   );
 }
-
-export default MainApp;

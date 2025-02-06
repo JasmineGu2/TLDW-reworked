@@ -1,0 +1,29 @@
+.button {
+    padding: 8px 16px;
+    background-color: #2563eb; /* Tailwind's bg-blue-600 */
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .button:hover {
+    background-color: #1d4ed8; /* Tailwind's hover:bg-blue-700 */
+  }
+  
+  .button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #3b82f6; /* Tailwind's focus:ring-2 focus:ring-blue-500 */
+  }
+  
+  .button:focus-visible {
+    outline: 2px solid #3b82f6; /* Ensures better focus visibility */
+  }
+  
+  .button:disabled {
+    background-color: #94a3b8; /* Tailwind's bg-gray-400 */
+    cursor: not-allowed;
+  }
+  

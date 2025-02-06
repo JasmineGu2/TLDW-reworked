@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
+
+    --primary: 43 92% 62%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 48 100% 92%;
+    --secondary-foreground: 0 0% 0%;
+
+    --muted: 0 0% 88%;
+    --muted-foreground: 0 0% 40%;
+
+    --accent: 43 92% 62%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 43 92% 62%;
+    --input: 43 92% 62%;
+    --ring: 43 92% 62%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 15%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 20%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 15%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 43 92% 62%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 25%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 30%;
+    --muted-foreground: 0 0% 70%;
+
+    --accent: 43 92% 62%;
+    --accent-foreground: 0 0% 0%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 43 92% 62%;
+    --input: 0 0% 30%;
+    --ring: 43 92% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: "IBM Plex Mono", monospace;
+  }
+}
+
+::selection {
+  @apply bg-primary/20 text-primary-foreground;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-secondary;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary/80;
+}
+

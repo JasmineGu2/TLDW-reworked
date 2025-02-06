@@ -1,0 +1,89 @@
+/* Concept Card */
+.concept-card {
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  /* Title */
+  .concept-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 12px;
+  }
+  
+  /* Dropdown */
+  .concept-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: white;
+    transition: border 0.2s ease-in-out;
+  }
+  
+  .concept-dropdown:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 4px rgba(66, 153, 225, 0.4);
+    outline: none;
+  }
+  
+  /* Message */
+  .concept-message {
+    color: #e53e3e;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 5px;
+  }
+  
+  /* Form */
+  .concept-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  /* Input */
+  .concept-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border 0.2s ease-in-out;
+  }
+  
+  .concept-input:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 4px rgba(49, 130, 206, 0.4);
+    outline: none;
+  }
+  
+  /* Button */
+  .concept-btn {
+    background-color: #3182ce;
+    color: white;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: background 0.3s ease-in-out;
+    cursor: pointer;
+    border: none;
+  }
+  
+  .concept-btn:hover {
+    background-color: #2b6cb0;
+  }
+  
+  .concept-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
