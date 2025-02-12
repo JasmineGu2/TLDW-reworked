@@ -1,29 +1,45 @@
+/* Default Button Styles */
 .button {
-    padding: 8px 16px;
-    background-color: #2563eb; /* Tailwind's bg-blue-600 */
-    color: white;
-    border-radius: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.2s ease-in-out;
   }
   
-  .button:hover {
-    background-color: #1d4ed8; /* Tailwind's hover:bg-blue-700 */
+  /* Primary Button */
+  .button-primary {
+    background-color: #f4c15d; /* Golden yellow */
+    color: white;
   }
   
-  .button:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #3b82f6; /* Tailwind's focus:ring-2 focus:ring-blue-500 */
+  .button-primary:hover {
+    background-color: #d9a23d; /* Darker yellow */
   }
   
-  .button:focus-visible {
-    outline: 2px solid #3b82f6; /* Ensures better focus visibility */
+  /* Secondary Button */
+  .button-secondary {
+    background-color: #efe88d; /* Light gray */
+    color: #6e7074; /* Dark gray text */
+  }
+  
+  .button-secondary:hover {
+    background-color: #f4edaf; /* Darker gray */
+  }
+  
+  /* Small Button */
+  .button-small {
+    padding: 6px 10px; /* Smaller padding */
+    font-size: 0.875rem; /* Smaller font size */
+    border-radius: 6px; /* Slightly smaller corners */
   }
   
   .button:disabled {
-    background-color: #94a3b8; /* Tailwind's bg-gray-400 */
+    background-color: #cbd5e0; /* Light gray */
+    color: #a0aec0; /* Faded text */
     cursor: not-allowed;
+    pointer-events: none; /* Ensures no clicking */
   }
   

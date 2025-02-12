@@ -1,14 +1,6 @@
 /* Concept Card */
-.concept-card {
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    border: 1px solid #e2e8f0;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
+
+
   /* Title */
   .concept-title {
     font-size: 1.5rem;
@@ -17,35 +9,19 @@
     margin-bottom: 12px;
   }
   
-  /* Dropdown */
-  .concept-dropdown {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #cbd5e0;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: white;
-    transition: border 0.2s ease-in-out;
-  }
-  
-  .concept-dropdown:focus {
-    border-color: #4299e1;
-    box-shadow: 0 0 4px rgba(66, 153, 225, 0.4);
-    outline: none;
-  }
-  
   /* Message */
   .concept-message {
-    color: #e53e3e;
     font-size: 0.9rem;
     font-weight: 500;
     margin-top: 5px;
+    color:crimson;
   }
   
   /* Form */
   .concept-form {
     display: flex;
     justify-content: center;
+    flex-direction: column;
     gap: 10px;
     margin-top: 10px;
   }
@@ -59,31 +35,76 @@
     font-size: 1rem;
     transition: border 0.2s ease-in-out;
   }
-  
-  .concept-input:focus {
-    border-color: #3182ce;
-    box-shadow: 0 0 4px rgba(49, 130, 206, 0.4);
-    outline: none;
+
+  /* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
   }
   
-  /* Button */
-  .concept-btn {
-    background-color: #3182ce;
-    color: white;
+  /* Modal Content */
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-out;
+  }
+  
+  /* Tiny Button Styles */
+.tiny-button {
+    padding: 4px 8px; /* Smaller padding */
+    font-size: 0.75rem; /* Smaller font size */
     font-weight: 500;
-    padding: 10px 16px;
-    border-radius: 8px;
-    transition: background 0.3s ease-in-out;
+    border-radius: 4px; /* Smaller rounded corners */
+    background-color: #e2e8f0; /* Light gray background */
+    color: #2d3748; /* Dark text */
+    border: 1px solid #cbd5e0; /* Light border */
+    transition: background-color 0.3s ease, color 0.3s ease;
     cursor: pointer;
-    border: none;
+    width: auto;
+    margin: 8px;
   }
   
-  .concept-btn:hover {
-    background-color: #2b6cb0;
+  /* Hover State */
+  .tiny-button:hover {
+    background-color: #cbd5e0; /* Slightly darker gray */
+    color: #1a202c; /* Slightly darker text */
   }
   
-  .concept-btn:disabled {
-    background-color: #a0aec0;
-    cursor: not-allowed;
+  /* Active State */
+  .tiny-button:active {
+    background-color: #a0aec0; /* Darker gray */
+    color: #1a202c;
+  }
+
+  
+  /* Modal Title */
+  .modal-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #2d3748;
+  }
+  
+  /* Modal Buttons */
+  .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .modal-overlay.no-close {
+    pointer-events: auto; /* Allow clicks inside modal */
   }
   

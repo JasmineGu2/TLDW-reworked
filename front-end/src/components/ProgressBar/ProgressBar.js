@@ -21,6 +21,7 @@ const ProgressBar = ({ taskId, onComplete }) => {
 
       if (data.status === "Error: File name already exists!") {
         setStatus("error")
+        setProgress(0)
         ws.close();
       }
       if (data.progress === 100) {
@@ -31,6 +32,7 @@ const ProgressBar = ({ taskId, onComplete }) => {
 
     ws.onerror = (error) => {
       console.error("WebSocket error:", error);
+      ws.close();
     };
 
     ws.onclose = () => {
@@ -49,6 +51,10 @@ const ProgressBar = ({ taskId, onComplete }) => {
 
       if (response.ok) {
         onComplete(result); // Send final data to parent component
+        setTimeout(() => {
+          setProgress(0);
+        }, 5000);
+      
       } else {
         console.error("Result not available yet");
       }

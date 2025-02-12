@@ -51,15 +51,13 @@ body {
   }
   .input-field:focus {
     outline: none;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 1px #3b82f6;
+    border-color: #f4c15d;
+    box-shadow: 0 0 0 1px #f4c15d;
   }
   
   /* Error Message */
   .error-message {
     background-color: #fee2e2;
-    border: 1px solid #f87171;
-    color: #b91c1c;
     padding: 0.75rem;
     border-radius: 0.375rem;
     margin-bottom: 1rem;
@@ -77,14 +75,14 @@ body {
     font-size: 0.875rem;
     font-weight: 500;
     color: white;
-    background-color: #2563eb;
+    background-color: #f4c15d;
     cursor: pointer;
   }
   .submit-button:hover {
-    background-color: #1d4ed8;
+    background-color: #87682a;
   }
   .submit-button:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.5);
+    box-shadow: 0 0 0 2px rgba(235, 195, 37, 0.5);
   }
   

@@ -20,7 +20,7 @@ from django.shortcuts import get_object_or_404
 from .models import Concept, GeneratedNotes
 from .serializers import ConceptSerializer, GeneratedNotesSerializer
 
-# ✅ Fetch all concepts
+# Fetch concepts
 @api_view(['GET'])
 @permission_classes([AllowAny]) 
 def get_concepts(request):
@@ -36,11 +36,11 @@ def add_concept(request):
     if not name:
         return Response({"error": "Concept name cannot be empty"}, status=400)
 
-    # ✅ Check if the concept already exists
+    # Check if concept already exists
     if Concept.objects.filter(name__iexact=name).exists():  
         return Response({"error": "Concept already exists"}, status=400)
 
-    # ✅ Create concept if it doesn't exist
+    # Create concept if not
     concept = Concept.objects.create(name=name)
     return Response({"message": "Concept added", "concept": ConceptSerializer(concept).data})
 
@@ -79,7 +79,7 @@ def login_view(request):
         return Response({'error': 'Invalid credentials'}, status=400)
 
 @api_view(["POST"])
-@permission_classes([AllowAny])  # Change to [IsAuthenticated] if login is required
+@permission_classes([AllowAny])  
 def generate_pdf(request):
     user = request.user if request.user.is_authenticated else User.objects.filter(is_superuser=True).first()
     link = request.data.get("link")
@@ -89,14 +89,14 @@ def generate_pdf(request):
     if not link:
         return Response({"error": "No YouTube link provided"}, status=400)
 
-    # ✅ Use user Id for taskId
+    #  Use user Id for taskId
     task_id = f"user_{user.id if user else 'anonymous'}"
 
-    # ✅ Run yt2var in a separate thread (Non-blocking)
+    # Run yt2var in a separate thread 
     thread = threading.Thread(target=yt2var, args=(link, task_id, file_name, user, concept_name))
     thread.start()
 
-    # ✅ Return task_id immediately so frontend can start listening to WebSocket updates
+    # Return task_id immediately so frontend can start listening to WebSocket updates
     print("task" + task_id)
     return JsonResponse({"message": "PDF generation started", "task_id": task_id})
 
@@ -132,8 +132,6 @@ def get_notes(request):
     if search_query:
         notes_query = notes_query.filter(title__icontains=search_query)
     
-  
-    # ✅ Use DRF's Pagination Correctly
     paginator = PageNumberPagination()
     paginator.page_size = page_size  
     paginated_notes = paginator.paginate_queryset(notes_query, request)
@@ -153,7 +151,7 @@ def get_notes(request):
             "concept": note.concept.name if note.concept else "Uncategorized",
         })
 
-    # ✅ Return paginated response
+    # Return paginated response
     return paginator.get_paginated_response(notes_list)
 
 

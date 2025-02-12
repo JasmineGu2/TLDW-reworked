@@ -1,7 +1,6 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
 @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap");
 
@@ -102,3 +101,14 @@
   @apply bg-primary/80;
 }
 
+
+.light-mode {
+    background-color: #ffffff;
+    color: #000000;
+  }
+  
+  .dark-mode {
+    background-color: #1a202c;
+    color: #e2e8f0;
+  }
+  

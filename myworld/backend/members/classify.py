@@ -2,18 +2,18 @@ import cohere
 
 co = cohere.Client('be9hsXdGngivV7mpMBN7toSumRn9mu11YX638ARk') # This is your trial API key
 
+
 def extract(example):
     extraction = co.generate(
         model="command",
-        prompt=f"Extract only the most relevant keywords from the following text. Return only the keywords, separated by commas:\n\n{example}",
+        prompt=f"Extract only the most relevant keywords from the following text. Don't return any response to me in the form of Sure! Here are... Return only the keywords, separated by commas:\n\n{example}",
         max_tokens=15,  # Allow slightly more tokens for multiple keywords
         temperature=0.1,
         stop_sequences=["\n"]
     )
-    print(extraction)
     
     # Ensure clean keyword extraction
-    return extraction.generations[0].text.strip().replace("Here are the important keywords extracted from the text:", "").strip()
+    return extraction.generations[0].text.strip()
 
 def classify_notes(input_text):
     response = co.classify(

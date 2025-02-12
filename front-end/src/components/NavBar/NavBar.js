@@ -1,10 +1,28 @@
-import { motion } from "framer-motion"
-import { Moon, Sun, FileText } from "lucide-react"
-import { useTheme } from "next-themes"
+import { motion } from "framer-motion";
+import { Moon, Sun, FileText } from "lucide-react";
+import { useTheme } from "next-themes";
 import Button from "../Button/button.js";
+import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-export default function NavBar({ handleLogout }) {
-  const { theme, setTheme } = useTheme()
+export default function NavBar() {
+  const { theme, setTheme, systemTheme } = useTheme();
+  const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    console.log("Current theme:", theme);
+  }, [theme]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    navigate("/login");
+  };
+
+  // Determine which theme should be applied
+  const currentTheme = theme === "system" ? systemTheme : theme;
 
   return (
     <motion.nav
@@ -13,24 +31,30 @@ export default function NavBar({ handleLogout }) {
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 100 }}
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 bg-white dark:bg-gray-900">
         <div className="flex items-center justify-between h-16">
-          <a href="/" className="flex items-center space-x-2 text-foreground hover:text-primary transition-colors">
+          <a href="/app" className="flex items-center space-x-2 text-foreground hover:text-primary transition-colors">
             <FileText className="w-6 h-6" />
             <span className="font-mono text-lg font-bold">TL;DW</span>
           </a>
 
           <div className="flex items-center space-x-8">
-            <Button
+            {/* Button to toggle theme */}
+            {/* <Button
               variant="ghost"
               size="icon"
-              className="text-foreground hover:text-primary"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="relative flex items-center justify-center w-10 h-10"
+              onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
             >
-              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              {mounted && currentTheme === "dark" ? (
+                <Sun className="h-6 w-6 text-yellow-400 transition-transform transform rotate-0 scale-100" />
+              ) : (
+                <Moon className="h-6 w-6 text-blue-500 transition-transform transform rotate-180 scale-100" />
+              )}
               <span className="sr-only">Toggle theme</span>
-            </Button>
+            </Button> */}
+
+            {/* Navigation links and Logout button */}
             <div className="hidden md:flex items-center space-x-8">
               {["Home", "Application", "Process"].map((item) => (
                 <a
@@ -44,7 +68,6 @@ export default function NavBar({ handleLogout }) {
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="font-mono border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 Logout
               </Button>
@@ -53,6 +76,5 @@ export default function NavBar({ handleLogout }) {
         </div>
       </div>
     </motion.nav>
-  )
+  );
 }
-

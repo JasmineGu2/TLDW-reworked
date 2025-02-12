@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import Card from "../Card/card";
+import Button from "../Button/button";
+import Input from "../Input/input";
 import "./styles.css";
 
-const PdfTable = ({ update }) => {
+const PdfTable = () => {
+  const { theme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
   const [pdfs, setPdfs] = useState([]);
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [tempPage, setTempPage] = useState("");
+  const [tempPage, setTempPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const [concepts, setConcepts] = useState([]);
@@ -14,6 +21,7 @@ const PdfTable = ({ update }) => {
   const [fetchTriggered, setFetchTriggered] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetch("http://127.0.0.1:8000/api/concepts/")
       .then((res) => res.json())
       .then((data) => setConcepts(data.concepts))
@@ -37,7 +45,7 @@ const PdfTable = ({ update }) => {
 
       const data = await response.json();
       setPdfs(data.results);
-      setTotalPages(Math.ceil(data.count / 10));
+      setTotalPages(Math.ceil(data.count / 10)); 
     } catch (error) {
       console.error("Error fetching PDFs:", error);
     } finally {
@@ -53,30 +61,27 @@ const PdfTable = ({ update }) => {
     );
   };
 
-  return (
-    <div className="pdf-card">
+  const currentTheme = theme === "system" ? systemTheme : theme;
 
+  return (
+    <>
       {/* Fetch Button */}
       <div className="button-container">
-        <button onClick={fetchPdfs} className="submit-button">
-          Fetch PDFs
-        </button>
+        <Button onClick={fetchPdfs}>Fetch PDFs</Button>
       </div>
 
       {/* Search Bar */}
       <div className="input-group">
-        <input
+        <Input
           type="text"
           placeholder="Search notes by title..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="input-field"
         />
       </div>
 
       {/* Multi-Select Concept Filter */}
       <div className="concept-filter">
-        <label className="input-label">Filter by Concepts</label>
         <div className="concept-list">
           {concepts.map((concept) => (
             <label key={concept.id} className="concept-item">
@@ -98,104 +103,71 @@ const PdfTable = ({ update }) => {
       {fetchTriggered && (
         <div className="table-wrapper">
           <table className="pdf-table">
-            <thead>
-              <tr>
-                <th>Title (YouTube Link)</th>
-                <th>Created At</th>
-                <th>Download PDF</th>
-                <th>View Notes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pdfs.map((pdf) => (
-                <tr key={pdf.id}>
-                  <td>
-                    <a
-                      href={pdf.youtube_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="pdf-link"
-                    >
-                      {pdf.title}
-                    </a>
-                  </td>
-                  <td>{new Date(pdf.created_at).toLocaleString()}</td>
-                  <td>
-                    <a
-                      href={pdf.pdf_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="download-btn"
-                    >
-                      Download PDF
-                    </a>
-                  </td>
-                  <td>
-                    <button
-                      className="view-notes-btn"
-                      onClick={() => setSelectedPdf(pdf)}
-                    >
-                      View Notes
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+          <thead>
+  <tr>
+    <th>Title (YouTube Link)</th>
+    <th>Concept </th> 
+    <th>Created At</th>
+    <th>Download PDF</th>
+  </tr>
+</thead>
+<tbody>
+  {pdfs.map((pdf) => (
+    <tr key={pdf.id}>
+      <td>
+        <a
+          href={pdf.youtube_link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pdf-link"
+        >
+          {pdf.title}
+        </a>
+      </td>
+      <td>{pdf.concept || "N/A"}</td> 
+      <td>{new Date(pdf.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</td>
+      <td>
+        <a
+          href={pdf.pdf_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="download-btn"
+        >
+          Download PDF
+        </a>
+      </td>
+    </tr>
+  ))}
+</tbody>
+
           </table>
         </div>
       )}
 
-      {/* Pagination */}
-      {fetchTriggered && (
+   {/* Pagination */}
+   {fetchTriggered && (
         <div className="pagination">
-          <button disabled={page <= 1} onClick={() => setPage(1)}>
+          <button className="custom-button" disabled={page <= 1} onClick={() => setPage(1)}>
             First
           </button>
-          <button disabled={page <= 1} onClick={() => setPage(page - 1)}>
+          <button className="custom-button" disabled={page <= 1} onClick={() => setPage(page-1)}>
             Previous
           </button>
           <span>
             Page{" "}
-            <input
-              type="number"
-              value={tempPage}
-              onChange={(e) => setTempPage(Number(e.target.value))}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  setPage(Math.max(1, Math.min(tempPage, totalPages)));
-                }
-              }}
-              min="1"
-              max={totalPages}
-            />{" "}
-            of {totalPages}
+           { page == 1 && totalPages == 0 ? 0 : page }{" "}
+             of {totalPages}
           </span>
-          <button disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
+          {/* buggy because pagination needed page to be at least 1! so can't display 0*/}
+          <button className="custom-button" disabled={page >= totalPages} onClick={() => setPage(page+1)}>
             Next
           </button>
-          <button disabled={page >= totalPages} onClick={() => setPage(totalPages)}>
+          <button className="custom-button" disabled={page >= totalPages} onClick={() => setPage(totalPages)}>
             Last
           </button>
         </div>
       )}
-
-      {/* Notes Modal */}
-      {selectedPdf && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h2>{selectedPdf.title}</h2>
-            <textarea
-              className="modal-textarea"
-              readOnly
-              value={selectedPdf.class_notes}
-            ></textarea>
-            <button className="close-modal-btn" onClick={() => setSelectedPdf(null)}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-    </div>
+      </>
   );
 };
 

@@ -7,10 +7,10 @@
 }
 
 .progress-filler {
-  height: 20px;
-  background-color: #4caf50;
+  background-color: #2a6c44;
   border-radius: 10px;
   transition: width 0.4s ease-in-out;
+  height: 30px;
 }
 
 .progress-label {
@@ -18,7 +18,7 @@
   top: 50%;
   left:50%;
   transform: translate(-50%, -50%);
-  color: white;
+  color: rgb(48, 46, 46);
   font-weight: bold;
   font-size: 14px;
 }

@@ -9,6 +9,25 @@
     text-align: center;
   }
   
+  /* Light Mode Table Headers */
+.light-mode th {
+    background-color: #f1f5f9; /* Light gray background */
+    color: #1a202c; /* Dark text for contrast */
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #cbd5e0; /* Light border */
+}
+
+/* Dark Mode Table Headers */
+.dark-mode th {
+    background-color: #2d3748; /* Dark gray background */
+    color: #e2e8f0; /* Light text for contrast */
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #4a5568; /* Darker border */
+}
+
+
   /* Title */
   .pdf-title {
     font-size: 1.75rem;
@@ -17,7 +36,31 @@
     margin-bottom: 24px;
   }
   
-  /* Table Wrapper */
+  .custom-button {
+    background-color: #f4c15d; /* Golden yellow */
+    color: white;
+    font-size: 0.875rem; /* Slightly smaller font */
+    font-weight: 500;
+    padding: 6px 12px; /* Compact padding */
+    border: none;
+    border-radius: 6px; /* Rounded corners */
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Hover State */
+  .custom-button:hover {
+    background-color: #d9a23d; /* Slightly darker yellow */
+  }
+
+  /* Disabled State */
+.custom-button:disabled {
+    background-color: #e2e8f0; /* Light gray */
+    color: #a0aec0; /* Faded gray text */
+    cursor: not-allowed; /* Disabled cursor */
+  }
+
+
   .table-wrapper {
     overflow-x: auto;
   }
@@ -29,44 +72,6 @@
     margin-top: 20px;
   }
   
-  .pdf-table th,
-  .pdf-table td {
-    padding: 12px;
-    border-bottom: 1px solid #e2e8f0;
-  }
-  
-  .pdf-table th {
-    background-color: #f7fafc;
-    font-weight: bold;
-  }
-  
-  .pdf-table tr:hover {
-    background-color: #f1f5f9;
-  }
-  
-  /* Download Button */
-  .download-btn {
-    color: #3182ce;
-    text-decoration: none;
-  }
-  
-  .download-btn:hover {
-    text-decoration: underline;
-  }
-  
-  /* View Notes Button */
-  .view-notes-btn {
-    background-color: #3182ce;
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  
-  .view-notes-btn:hover {
-    background-color: #2b6cb0;
-  }
   
   /* Pagination */
   .pagination {
@@ -81,9 +86,55 @@
   .concept-filter {
     margin-bottom: 15px;
   }
-  
-  .input-label {
-    font-weight: 500;
-    color: #4a5568;
+  .concept-list{
+    display: flex;
+    gap: 15px;
+    justify-content: flex-start;
   }
   
+  .concept-item{
+    display:flex;
+    gap:3px;
+  }
+  .input-label {
+    font-weight: 500;
+  }
+  
+  .light-mode {
+    background-color: white;
+    color: black;
+  }
+  
+  .dark-mode {
+    background-color: #1a1a2e;
+    color: white;
+  }
+
+  
+  /* Light Mode Table */
+.light-mode .pdf-table th,
+.light-mode .pdf-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0; /* Light border */
+}
+
+/* Light Mode Table Headers */
+.light-mode .pdf-table th {
+    background-color: #f7fafc; /* Light gray */
+    font-weight: bold;
+    color: #1a202c; /* Dark text */
+}
+
+/* Dark Mode Table */
+.dark-mode .pdf-table th,
+.dark-mode .pdf-table td {
+    padding: 12px;
+    border-bottom: 1px solid #4a5568; /* Darker border */
+}
+
+/* Dark Mode Table Headers */
+.dark-mode .pdf-table th {
+    font-weight: bold;
+    color: #e2e8f0; /* Light text */
+    background-color: #1a1a2e;
+}

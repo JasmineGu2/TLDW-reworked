@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+import Button from "../Button/button";
+import Input from "../Input/input";
 import "./styles.css";
 
 const Concepts = ({ selectedConcept, setSelectedConcept }) => {
+  const { theme, systemTheme } = useTheme();
+  const currentTheme = theme === "system" ? systemTheme : theme;
+
   const [newConcept, setNewConcept] = useState(""); // Stores new concept input
   const [message, setMessage] = useState(""); // Stores validation error
   const [concepts, setConcepts] = useState([]); // Stores list of concepts
-  const [update, setUpdate] = useState(false); // Triggers re-fetch when a new concept is added
+  const [updateConcept, setUpdateConcept] = useState(false); // Triggers re-fetch when a new concept is added
+  const [isModalOpen, setIsModalOpen] = useState(false); // Controls modal visibility
 
   // Fetch available concepts from backend
   useEffect(() => {
@@ -14,13 +21,11 @@ const Concepts = ({ selectedConcept, setSelectedConcept }) => {
       .then((data) => setConcepts(data.concepts))
       .catch((error) => console.error("Error fetching concepts:", error));
 
-    setUpdate(false);
-  }, [update]);
+    setUpdateConcept(false);
+  }, [updateConcept]);
 
   // Handle new concept submission
-  const handleAddConcept = async (e) => {
-    e.preventDefault();
-
+  const handleAddConcept = async () => {
     const response = await fetch("http://127.0.0.1:8000/api/concepts/add/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,49 +41,71 @@ const Concepts = ({ selectedConcept, setSelectedConcept }) => {
 
     console.log("Concept added successfully");
     setSelectedConcept(newConcept);
-    setUpdate(true);
-    setNewConcept(""); // Clear input
-    setMessage(data.message);
+    setUpdateConcept(true);
+    resetModal(); // Reset modal state and close modal
+  };
+
+  // Function to reset modal state and close modal
+  const resetModal = () => {
+    setNewConcept(""); // Clear input field
+    setMessage(""); // Clear validation message
+    setIsModalOpen(false); // Close modal
   };
 
   return (
-    <div className="concept-card">
-
-      {/* Dropdown for existing concepts */}
-      <select
-        className="concept-dropdown"
-        value={selectedConcept}
-        onChange={(e) => setSelectedConcept(e.target.value)}
-      >
-        <option value="">-- Select a Concept --</option>
-        {concepts.map((concept) => (
-          <option key={concept.id} value={concept.name}>
-            {concept.name}
-          </option>
-        ))}
-      </select>
-
-      {/* Display validation error */}
-      {message && <p className="concept-message">{message}</p>}
-
-      {/* Form to Add New Concept */}
-      <div className="concept-form">
-        <input
-          type="text"
-          placeholder="Enter a new concept"
-          value={newConcept}
-          onChange={(e) => setNewConcept(e.target.value)}
-          className="concept-input"
-        />
-        <button
-          onClick={handleAddConcept}
-          disabled={!newConcept.trim()}
-          className="concept-btn"
+    <>
+      <div className="flex">
+        {/* Dropdown for existing concepts */}
+        <select
+          className="concept-dropbown border-gray-200"
+          value={selectedConcept}
+          onChange={(e) => setSelectedConcept(e.target.value)}
         >
-          Add Concept
-        </button>
+          <option value="" disabled>
+            Select a Concept
+          </option>
+          {concepts.map((concept) => (
+            <option key={concept.id} value={concept.name}>
+              {concept.name}
+            </option>
+          ))}
+        </select>
+
+        {/* Add Concept Button to Open Modal */}
+        <Button variant="secondary" className="tiny-button" onClick={() => setIsModalOpen(true)}>
+          + New Concept
+        </Button>
+
+        {/* Modal */}
+        {isModalOpen && (
+          <div className="modal-overlay">
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              {/* Prevent closing when clicking inside modal */}
+              <h2 className="modal-title">Create New Concept</h2>
+              <Input
+                type="text"
+                placeholder="Enter a new concept"
+                value={newConcept}
+                onChange={(e) => setNewConcept(e.target.value)}
+              />
+              {message && (
+                <p className={`concept-message ${currentTheme === "dark" ? "dark-message" : "light-message"}`}>
+                  {message}
+                </p>
+              )}
+              <div className="modal-buttons">
+                <Button variant="secondary" onClick={resetModal}>
+                  Cancel
+                </Button>
+                <Button variant="primary" onClick={handleAddConcept} disabled={!newConcept.trim()}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

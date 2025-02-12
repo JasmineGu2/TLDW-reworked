@@ -79,18 +79,21 @@ def yt2var(link, task_id, file_name, user, concept_name):
     predictions, texts = classify_notes(summarized_array)
 
     # Step 5: Extract important keywords
-    send_update(85, "Extracting keywords...")
-    keywords, filtered_array = keywordify(predictions, texts)
+    # send_update(85, "Extracting keywords...")
+    # keywords, filtered_array = keywordify(predictions, texts)
+    keywords = extract(texts)
+    keywords = "Keywords: " + keywords;
 
     # Step 6: Structure final notes
     send_update(95, "Finalizing notes...")
     sum_notes = [[predictions[i], texts[i]] for i in range(len(texts))]
-    formatted_notes = [f"{note[0]}: {note[1]}" for note in sum_notes]
-
+    formatted_notes = [f"{note[0]}:\n{note[1]}\n \n" for note in sum_notes]  # Add extra line breaks
+    formatted_notes = [str(note) for note in formatted_notes]  # Ensure all elements are strings
+    formatted_text = "\n".join(formatted_notes)  # Join them properly
     # Step 7: Generate PDF with the summarized notes and keywords
     send_update(98, "Generating PDF...")
     pdf_filename, pdf_content = toPdf(
-        class_notes=formatted_notes,
+        class_notes=formatted_text,
         keywords=keywords,
         youtube_link=link,
         file_name=file_name
@@ -105,18 +108,17 @@ def yt2var(link, task_id, file_name, user, concept_name):
         youtube_link=link,
         title=file_name,
         concept=concept,
-        class_notes="\n".join(formatted_notes),  # Store as a text block
+        class_notes= formatted_text,  # Store as a text block
         keywords=keywords,  # Store keywords as JSON
         pdf_file=f"generated_pdfs/{pdf_filename}"  # Store PDF file reference
     )
 
-    # Save the generated PDF content inside the FileField
     notes_instance.pdf_file.save(pdf_filename, ContentFile(pdf_content))
     notes_instance.save()
-
+    
     # Cache the result for quick access
     result_data = {
-        "class_notes": formatted_notes,
+        "class_notes":formatted_text,
         "keywords": keywords,
         "title": file_name,
         "pdf_url": pdf_url

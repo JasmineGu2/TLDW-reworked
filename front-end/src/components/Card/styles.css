@@ -1,7 +1,19 @@
-.card {
+/* Light Mode */
+.light-mode-card {
     background-color: white;
+    color: black;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Equivalent to Tailwind's shadow-md */
     padding: 24px; /* Equivalent to Tailwind's p-6 */
-  }
-  
+    border: 1px solid #e2e8f0;
+}
+
+/* Dark Mode */
+.dark-mode-card {
+    background-color: #2a2a3a;
+    color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Slightly stronger shadow for dark mode */
+    padding: 24px;
+    border: 1px solid #444;
+}
